@@ -16,11 +16,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func database(w http.ResponseWriter, r *http.Request) {
 
 	type Row struct {
-		Id int `json:"id"`
-		Username string `json:"username"`
-		Text string `json:"text"`
-		Created string `json:"created"`
-		Project_id string `json:"project_id"`
+		Id int 
+		Username string 
+		Text string 
+		Created string 
+		Project_id string 
 	}
 
 	fmt.Println("request /database")
