@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"log"
+	_ "github.com/lib/pq"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -13,19 +14,40 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func database(w http.ResponseWriter, r *http.Request) {
+
+	type Row struct {
+		Id int `json:"id"`
+		Username string `json:"username"`
+		Text string `json:"text"`
+		Created string `json:"created"`
+		Project_id string `json:"project_id"`
+	}
+
 	fmt.Println("request /database")
 	connectionStr := "user=postgres dbname=postgres password=00000000 host=127.0.0.1 sslmode=disable"
 	db, err := sql.Open("postgres", connectionStr)
 	if err != nil {
 		fmt.Println(err)
 	}
+	defer db.Close()
+	fmt.Println("succesully connected to database")
 
-	if db != nil {
-		fmt.Println("succesully connected to database")
+	query := "SELECT username, text FROM messages"
+	data, err := db.Query(query)
+	if err != nil {
+		fmt.Println(err)
 	}
 
-	// query := "SELECT * FROM messages WHERE id = 5000000"
-	// db.Query(query)
+	for data.Next() {
+		var row Row
+
+		err := data.Scan(&row.Username, &row.Text)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("row ->" + row.Username + ": " + row.Text)
+	}
+
 }
 
 func main() {
