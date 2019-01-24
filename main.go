@@ -32,7 +32,7 @@ func database(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	fmt.Println("succesully connected to database")
 
-	query := "SELECT username, text FROM messages"
+	query := "SELECT username, text FROM comments WHERE id > 5000000 LIMIT 30"
 	data, err := db.Query(query)
 	if err != nil {
 		fmt.Println(err)
