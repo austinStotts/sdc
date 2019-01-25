@@ -1,0 +1,80 @@
+.whole-input-wrap {
+  margin: 10px;
+  border: 1px solid slateblue;
+  display: inline-block;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.input-wrap {
+  display: inline-block;
+  font-family: 'Roboto', sans-serif;
+}
+
+.input {
+  margin-left: 20px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.label {
+  width: 100px;
+  display: block;
+  font-family: 'Roboto', sans-serif;
+}
+
+.anchor {
+  border: 1px solid slateblue;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: 10px;
+  display: inline-block;
+  font-family: 'Roboto', sans-serif;
+  color: black;
+  transition-duration: 0.5s;
+}
+
+.anchor:hover {
+  background-color: slateblue;
+  color: white;
+}
+
+.id {
+  font-family: 'Roboto', sans-serif;
+  padding: 0%;
+  margin: 0%;
+  margin: 1px 1px 1px 1px;
+}
+
+.user {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  padding: 0%;
+  margin: 1px 1px 1px 1px;
+}
+
+.text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  padding: 0%;
+  margin: 1px 1px 5px 1px;
+}
+
+.created {
+  font-family: 'Roboto', sans-serif;
+  padding: 0%;
+  margin: 1px 1px 1px 1px;
+}
+
+.project {
+  font-family: 'Roboto', sans-serif;
+  padding: 0%;
+  margin: 1px 1px 1px 1px;
+}
+
+.stuff-wrapper {
+  padding: 0%;
+  margin: 15px 0px 15px 20px;
+}
+

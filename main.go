@@ -75,7 +75,8 @@ func main() {
 	}
 
 	// request handler
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/database", handler)
+	http.Handle("/", http.FileServer(http.Dir("dist")))
 
 	// custom server
 	server := &http.Server{
