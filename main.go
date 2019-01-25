@@ -2,59 +2,96 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
-	"net/http"
 	"log"
+	"net/http"
+	"time"
+
 	_ "github.com/lib/pq"
 )
 
+// connect to database
+var connectionStr = "user=postgres dbname=postgres password=00000000 host=127.0.0.1 sslmode=disable"
+var db, err = sql.Open("postgres", connectionStr)
+
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("request /")
-	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
-}
+	// set headers
+	w.Header().Set("Content-Type", "application/json")
 
-func database(w http.ResponseWriter, r *http.Request) {
+	// if the path = "database"
+	if r.URL.Path[1:] == "database" {
 
-	type Row struct {
-		Id int 
-		Username string 
-		Text string 
-		Created string 
-		Project_id string 
-	}
+		// get id from url query
+		q := r.URL.Query()
+		id := q.Get("id")
+		limit := q.Get("limit")
 
-	fmt.Println("request /database")
-	connectionStr := "user=postgres dbname=postgres password=00000000 host=127.0.0.1 sslmode=disable"
-	db, err := sql.Open("postgres", connectionStr)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer db.Close()
-	fmt.Println("succesully connected to database")
+		// Row struct
+		type Row struct {
+			ID        rune
+			Username  string
+			Text      string
+			Created   string
+			ProjectID string
+		}
 
-	query := "SELECT username, text FROM comments WHERE id > 5000000 LIMIT 30"
-	data, err := db.Query(query)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	for data.Next() {
-		var row Row
-
-		err := data.Scan(&row.Username, &row.Text)
+		// query the database with the query id
+		query := fmt.Sprintf("SELECT * FROM comments WHERE id > %s LIMIT %s", id, limit)
+		data, err := db.Query(query)
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println("row ->" + row.Username + ": " + row.Text)
-	}
 
+		// loop through and print results
+		slice := make([]Row, 0)
+		for data.Next() {
+			var row Row
+
+			err := data.Scan(&row.ID, &row.Username, &row.Text, &row.Created, &row.ProjectID)
+			if err != nil {
+				fmt.Println(err)
+			}
+			slice = append(slice, row)
+		}
+
+		// encode slice of rows to json and to []byte
+		comments, err := json.Marshal(slice)
+		if err != nil {
+			fmt.Println(err)
+		}
+		// write to response body
+		w.Write(comments)
+	}
 }
 
+// Main function
 func main() {
 	fmt.Println("running...")
+	err := db.Ping()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	http.HandleFunc("/", handler) // handle home requests
-	http.HandleFunc("/database", database) // handle database requests
+	// request handler
+	http.HandleFunc("/", handler)
 
-	log.Fatal(http.ListenAndServe(":3000", nil))
+	// custom server
+	server := &http.Server{
+		Addr:         ":3000",
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
+	// listen for requests
+	log.Fatal(server.ListenAndServe())
 }
+
+// ** ** ** ** ** ** ** ** ** ** ** ** ** ** **
+// Deployed Database stats :)
+//
+// test: SELECT * FROM comments WHERE id > 5000000 LIMIT 100
+// average responce before: "~13sec"
+// average response after:  "~0.0007sec"
+// ** ** ** ** ** ** ** ** ** ** ** ** ** ** **
